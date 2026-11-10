@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>滚木归位 · 1×1×2 翻滚解谜</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"><span></span><span></span><span></span></div>
+      <div class="brand-text">
+        <h1>滚木归位</h1>
+        <p>ROLL THE TIMBER · 1×1×2 空间解谜</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="progress-pill">已通关 <b id="progress-text">0 / 119 关</b></span>
+      <button id="btn-sound" class="ghost-btn" type="button" aria-pressed="true">♪ 音效开</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel levels-panel">
+      <div class="panel-title"><span>关卡</span><small>LEVELS</small></div>
+      <div class="level-jump">
+        <input id="level-jump-input" type="number" min="1" value="" placeholder="关卡号 1–119" aria-label="跳到关卡号">
+        <button id="btn-jump" type="button">跳转</button>
+      </div>
+      <div id="level-list" class="level-list"></div>
+      <p class="panel-foot">全部关卡开放，随时可以回头刷新最少步数。</p>
+    </aside>
+
+    <section class="stage-panel">
+      <div class="stage-head">
+        <div class="stage-title">
+          <span id="level-chapter" class="chapter-tag">入门</span>
+          <h2 id="level-name">01 · 第一滚</h2>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>步数</span><b id="move-count">0</b></div>
+          <div class="stat"><span>最优</span><b id="par-count">4</b></div>
+          <div class="stat"><span>最佳</span><b id="best-count">—</b></div>
+        </div>
+      </div>
+
+      <div id="canvas-wrap" class="canvas-wrap">
+        <canvas id="stage-canvas"></canvas>
+        <div class="canvas-glow"></div>
+        <div class="dpad" aria-label="方向键（菱形四向）">
+          <button data-dir="U" class="dpad-btn up" type="button" aria-label="上，屏幕左上"><span>↖</span><small>↑</small></button>
+          <button data-dir="R" class="dpad-btn right" type="button" aria-label="右，屏幕右上"><span>↗</span><small>→</small></button>
+          <button data-dir="L" class="dpad-btn left" type="button" aria-label="左，屏幕左下"><span>↙</span><small>←</small></button>
+          <button data-dir="D" class="dpad-btn down" type="button" aria-label="下，屏幕右下"><span>↘</span><small>↓</small></button>
+          <div class="dpad-core"></div>
+        </div>
+        <div id="toast" class="toast"></div>
+      </div>
+
+      <div class="stage-info">
+        <p id="level-intro" class="intro"></p>
+        <div id="hint-text" class="hint-text"></div>
+        <p class="tip"><span>诀窍</span><span id="level-tip"></span></p>
+      </div>
+
+      <div class="toolbar">
+        <div class="tool-group">
+          <button id="btn-prev" class="tool-btn" type="button">← 上一关</button>
+          <button id="btn-undo" class="tool-btn" type="button">撤销 <kbd>Z</kbd></button>
+          <button id="btn-reset" class="tool-btn" type="button">重开 <kbd>R</kbd></button>
+          <button id="btn-hint" class="tool-btn accent" type="button">下一步提示 <kbd>H</kbd></button>
+          <button id="btn-next" class="tool-btn" type="button">下一关 →</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel help-panel">
+      <div class="panel-title"><span>玩法</span><small>HOW TO PLAY</small></div>
+      <div class="help-block">
+        <p class="help-lead">用方向键把 <b>1×1×2</b> 的木块翻到洞口，<b>竖直立着</b>滑进去才算过关。</p>
+        <ul class="rule-list">
+          <li><b>竖立</b> 占 1 格，朝任意方向一倒变成横躺，跨出 2 格。</li>
+          <li><b>横躺</b> 占 2 格；沿长边翻会立起来并前进 2 格，朝侧面翻只挪 1 格。</li>
+          <li>任何一部分悬空就会坠落；失败的一步不算数，会退回原地。</li>
+        </ul>
+      </div>
+      <div class="panel-title sub"><span>地图图例</span><small>TILES</small></div>
+      <div class="legend">
+        <div><i class="sw sw-floor"></i><span>木砖</span></div>
+        <div><i class="sw sw-goal"></i><span>终点洞（须竖立）</span></div>
+        <div><i class="sw sw-fragile"></i><span>易碎木（禁竖立）</span></div>
+        <div><i class="sw sw-bridge"></i><span>吊桥（开关控制）</span></div>
+        <div><i class="sw sw-soft"></i><span>圆形软开关</span></div>
+        <div><i class="sw sw-hard"></i><span>X 重开关（须竖立）</span></div>
+        <div><i class="sw sw-toggle"></i><span>菱形往复开关</span></div>
+        <div><i class="sw sw-portal"></i><span>传送台（须竖立）</span></div>
+      </div>
+      <div class="panel-title sub"><span>方向对照</span><small>ISOMETRIC</small></div>
+      <div class="compass">
+        <div class="compass-diamond"></div>
+        <span class="cp cp-u">↑<em>左上</em></span>
+        <span class="cp cp-r">→<em>右上</em></span>
+        <span class="cp cp-d">↓<em>右下</em></span>
+        <span class="cp cp-l">←<em>左下</em></span>
+      </div>
+      <p class="compass-note">方向键已对齐屏幕上看到的四个斜向：按哪个键，木块就朝哪个角走。</p>
+      <div class="panel-title sub"><span>操作</span><small>CONTROLS</small></div>
+      <div class="keys">
+        <p><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> 或 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 翻滚</p>
+        <p><kbd>Z</kbd> 撤销 · <kbd>R</kbd> 重开 · <kbd>H</kbd> 提示</p>
+        <p>触屏可沿斜向滑动，或使用画面右下角的菱形方向键</p>
+      </div>
+      <p class="credit">同类经典：Bloxorz（Damien Clarke / DX Interactive, 2007）。本作地图、机关与美术为原创设计，全部关卡由 BFS 求解器验证可解。</p>
+    </aside>
+  </main>
+</div>
+
+<div id="win-overlay" class="overlay">
+  <div class="win-card">
+    <div class="win-badge">◈</div>
+    <h2 id="win-title">漂亮，入洞了</h2>
+    <div id="win-stars" class="win-stars">★★★</div>
+    <div id="win-stats" class="win-stats"></div>
+    <p id="win-note" class="win-note"></p>
+    <div class="win-actions">
+      <button id="win-next" class="primary-btn" type="button">下一关 →</button>
+      <button id="win-retry" class="tool-btn" type="button">再玩一次</button>
+      <button id="win-close" class="tool-btn" type="button">留在此关</button>
+    </div>
+  </div>
+</div>
+
+<script src="src/levels.js"></script>
+<script src="src/rules.js"></script>
+<script src="src/solver.js"></script>
+<script src="src/render.js"></script>
+<script src="src/game.js"></script>
+</body>
+</html>

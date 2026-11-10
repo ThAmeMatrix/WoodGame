@@ -1,0 +1,25 @@
+# 构建产物与分发包（本地生成，不上传）
+/dist/
+/desktop/build/
+/desktop/game/
+/desktop/WoodGame.spec
+
+# 本地验证/设计草稿与缓存
+/work/
+/tools/__pycache__/
+__pycache__/
+*.pyc
+
+# 凭据与私有数据（任何情况下都不上传）
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+*secret*
+*credential*
+
+# 系统杂项
+.DS_Store
+Thumbs.db
